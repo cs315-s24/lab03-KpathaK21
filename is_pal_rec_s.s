@@ -1,44 +1,30 @@
 .global pal_rec_s
 
 pal_rec_s:
-# Save registers on the stack
-    addi sp, sp, -12        # Reserve space on the stack
-    sw ra, 0(sp)            # Save return address
-    sw a0, 4(sp)            # Save pointer to string
-    sw a1, 8(sp)            # Save start index
-    sw a2, 12(sp)
+    # Base cases:
+    # If length is 0 or 1, string is palindrome
+    beqz a0, is_palindrome_true
+    beq a0, a0, is_palindrome_true
 
-    # Base case: if start index is greater or equal to end index, its a palindrome
-    beq a1, a2, palindrome
+    # Load first and last characters of the string
+    add t5, a1, a0         # Address of last character
+    addi t5, t5, -1        # Adjust address to get the correct index for the last character
+    lb t3, 0(a1)           # First character
+    lb t4, 0(t5)           # Last character
 
-    # Compare characters at start and end index
-    lb t0, 0(a0)            # Load character at start index
-    lb t1, 0(a2)            # Load character at end index
-    bne t0, t1, notPalindrome   # If not equal, not a palindrome
+    # Check if first and last characters are equal
+    bne t3, t4, is_palindrome_false
 
+    # Recurse with string excluding first and last characters
+    addi a1, a1, 1          # Address of string excluding first character
+    addi a0, a0, -2         # Length of string excluding first and last characters
+    jal ra, pal_rec_s
 
-    # Recursive call with incremented start index and decremented end index
-    addi a0, a0, 1          # Increment pointer to string
-    addi a1, a1, 1          # Increment start index
-    addi a2, a2, -1         # Decrement end index
-    jal pal_rec_s           # Recursive call
+    
+is_palindrome_true:
+    li a0, 1    # Return 1 to indicate palindrome
+    ret
 
-    # Restore registers from the stack
-    lw ra, 0(sp)            # Restore return address
-    lw a0, 4(sp)            # Restore pointer to string
-    lw a1, 8(sp)            # Restore start index
-    lw a2, 12(sp)
-    addi sp, sp, 12         # Release space on the stack
-
-    j endPalindromeCheck    # Jump to end
-
-
-palindrome:
-    li a0, 1                # Palindrome
-    j endPalindromeCheck    # Jump to end
-
-notPalindrome:
-    li a0, 0                # Not a palindrome
-
-endPalindromeCheck:
-    ret                     # Return
+is_palindrome_false:
+    li a0, 0    # Return 0 to indicate not palindrome
+    ret
