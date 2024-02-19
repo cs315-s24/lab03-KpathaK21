@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 int sumarr_rec_c(int *, int, int);
+int sumarr_rec_s(int *, int, int);
 
 int main(int argc, char **argv) {
     int arr[1024] = {0};
@@ -14,10 +15,10 @@ int main(int argc, char **argv) {
     int c_result = sumarr_rec_c(arr, 0, len - 1);
     printf("C: %d\n", c_result);
 
-    /* TODO
+
     int s_result = sumarr_rec_s(arr, 0, len - 1);
     printf("Asm: %d\n", s_result);
-    */
+    
 
     return 0;
 }
